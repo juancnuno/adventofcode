@@ -11,11 +11,15 @@ public final class Multisets {
     }
 
     public static <K> Collector<K, ?, Map<K, Integer>> toMultiset() {
-        return Collectors.toMap(key -> key, key -> 1, Integer::sum);
+        return Collectors.groupingBy(key -> key, counting());
     }
 
     public static <K extends Enum<K>> Collector<K, ?, Map<K, Integer>> toEnumMultiset(Class<K> c) {
-        return Collectors.toMap(key -> key, key -> 1, Integer::sum, () -> new EnumMap<>(c));
+        return Collectors.groupingBy(key -> key, () -> new EnumMap<>(c), counting());
+    }
+
+    private static <K> Collector<K, ?, Integer> counting() {
+        return Collectors.summingInt(key -> 1);
     }
 
     public static <K> void put(Map<K, Integer> multiset, K key, int count) {
